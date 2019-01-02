@@ -1,5 +1,6 @@
 package;
 
+import pongo.display.ClearSprite;
 import pongo.util.Signal2;
 import kha.Color;
 import kha.math.Random;
@@ -16,10 +17,11 @@ import pongo.ecs.group.SourceGroup;
 import pongo.display.FillSprite;
 import system.PositionSystem;
 import system.StarsInitSystem;
+import system.ViewMoveSystem;
 
 class Main {
 
-	public static inline var WIDTH = 400;
+	public static inline var WIDTH = 600;
 	public static inline var HEIGHT = 400;
 
 	public static function main() {
@@ -40,9 +42,13 @@ class Main {
         var starsRoot = pongo.root.createChild();
         var starFactory = new StarFactory(starsRoot, starSettings);
 
+        pongo.root.addComponent(new Transform(new ClearSprite(0,0)));
+        
         pongo
             .addSystem(new TransformSystem())
-            .addSystem(new PositionSystem());
+            .addSystem(new PositionSystem())
+            .addSystem(new ViewMoveSystem(WIDTH, HEIGHT));
+        
 
         for (i in 0...starSettings.starsCount) {
             starFactory.createRandomStar();
