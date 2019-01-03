@@ -53,7 +53,6 @@ class ViewMoveSystem extends System {
 
         if (down) {
             camera.y -= delta * cameraSpeed;
-            trace("down");
         }
         if (up) {
             camera.y += delta * cameraSpeed;
@@ -149,15 +148,13 @@ class ViewMoveSystem extends System {
         if (!isTouch) return;
 
         var window = this.pongo.window;
-
-        trace("X: " + x + " Y: " + y);
-
         var inWindow = x >= window.x && x <= window.x + window.width && y >= window.y && y <= window.y + window.height;
         if (!inWindow) return;
 
+        
         var camera = this.pongo.root.getComponent(Transform);
-        camera.x += deltaX;
-        camera.y += deltaY;
+        camera.x += gameWidth / window.width * deltaX;
+        camera.y += gameHeight / window.height * deltaY;
     }
 
     private function resetView() {
