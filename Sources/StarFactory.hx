@@ -1,14 +1,16 @@
 
 import kha.Color;
-import kha.math.Random;
+import Random;
 import pongo.ecs.transform.Transform;
 import pongo.display.CircleSprite;
 import component.PolarPosition;
 import component.Star;
 import pongo.Pongo;
 import pongo.ecs.Entity;
+import utility.MapHelper;
 
 class StarFactory { 
+
 
     private var starRoot: Entity;
     private var settings: StarSettings;
@@ -22,15 +24,20 @@ class StarFactory {
     public function createRandomStar() : Entity {
         var entity = starRoot.createChild();
 
-        settings.distribution;
+        var type : StarType = MapHelper.getRandomKeyForProbability(settings.distribution);
 
-        
-
-        var type = types[Random.getIn(0, types.length - 1)];
+        var size : Float;
+        switch(type) {
+            case SUBDWARF: size = Random.float(0.01, 1);
+            case DWARF: size = Random.float(1, 10);
+            case SUBGIANT: size = Random.float(10, 50);
+            case GIANT: size = Random.float(100, 500);
+            case SUPERGIANT: size = Random.float(1000, 2000);
+        }
 
         entity.addComponent(new PolarPosition(0, 0));
         entity.addComponent(new Star(type));
-        entity.addComponent(new Transform(new CircleSprite(Color.fromValue(Random.getUpTo(32000000)).value, Random.getFloatIn(0, 20))));
+        entity.addComponent(new Transform(new CircleSprite(Color.fromValue(Random.int(0, 32000000)).value, size)));
 
 
         return entity;

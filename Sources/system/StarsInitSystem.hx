@@ -19,7 +19,9 @@ class StarsInitSystem extends System {
     override public function onAdded() : Void
     {
         var distance : Float = 50;
-    
+        var minDistance = 10;
+        var maxDistance = 250;
+
         var curvature : Float = 1;
         var curvatureStep = 0.035;
         var star : Entity = starsRoot.firstChild;
@@ -32,7 +34,7 @@ class StarsInitSystem extends System {
             pos.angle = (curvature + Random.float(-dispersion, dispersion)) * Math.PI / 2;
             pos.radius = distance + pos.angle;
         
-            distance += Random.float(15, 40);
+            distance += Random.float(minDistance, maxDistance);
             curvature += curvatureStep;
             star.notifyChange();
             star = star.next;

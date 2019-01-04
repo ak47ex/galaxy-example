@@ -8,8 +8,8 @@ class StarSettings {
     public function new() {
         starsCount = 100;
         distribution = [
-            StarType.SUBDWARF => 0.5,
-            StarType.DWARF => 0.7,
+            StarType.SUBDWARF => 0.4,
+            StarType.DWARF => 1,
             StarType.SUBGIANT => 0.2,
             StarType.GIANT => 0.05,
             StarType.SUPERGIANT => 0.01

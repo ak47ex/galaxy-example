@@ -13,7 +13,7 @@ class ViewMoveSystem extends System {
     private var gameHeight : Float;
 
     private var cameraSpeed = 1000;
-    private var zoomSpeed = 1;
+    private var zoomSpeed = 0.1;
 
     private var down : Bool;
     private var up : Bool;
@@ -65,20 +65,23 @@ class ViewMoveSystem extends System {
         }
         
         if (zoomIn) {
-            camera.scaleX += delta * zoomSpeed;
-            camera.scaleY += delta * zoomSpeed;
+            camera.scaleX += delta * camera.scaleX;
+            camera.scaleY += delta * camera.scaleY;
             camera.x -= delta * gameWidth / 2 * zoomSpeed;
             camera.y -= delta * gameHeight / 2 * zoomSpeed;
         }
 
         if (zoomOut) {
-            camera.scaleX -= delta * zoomSpeed;
-            camera.scaleY -= delta * zoomSpeed;
-            camera.x += delta * gameWidth / 2 * zoomSpeed;
-            camera.y += delta * gameHeight / 2 * zoomSpeed;
+            camera.scaleX -= delta * camera.scaleX;
+            camera.scaleY -= delta * camera.scaleY;
+            
+            if (camera.scaleX > 0 && camera.scaleY > 0) {
+                camera.x += delta * gameWidth / 2 * zoomSpeed;
+                camera.y += delta * gameHeight / 2 * zoomSpeed;
+            }
 
-            if (camera.scaleX < 0) camera.scaleX = 0;
-            if (camera.scaleY < 0) camera.scaleY = 0;
+            if (camera.scaleX < 0) camera.scaleX = 0.00001;
+            if (camera.scaleY < 0) camera.scaleY = 0.00001;
         }
     }
 
