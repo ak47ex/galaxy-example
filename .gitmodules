@@ -1,6 +1,0 @@
-[submodule "PongoEngine.git"]
-	path = Libraries/Pongo
-	url = https://github.com/PongoEngine/Pongo.git
-[submodule "hxrandom.git"]
-	path = Libraries/hxrandom
-	url = https://github.com/jasononeil/hxrandom.git
