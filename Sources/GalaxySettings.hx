@@ -3,7 +3,7 @@ class GalaxySettings {
     public var armsAmount(default, null) : Int;
 
     public function new() {
-        spin = 0;
-        armsAmount = 1;
+        spin = 0.037;
+        armsAmount = 8;
     }
 }

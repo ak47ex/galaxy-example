@@ -6,13 +6,13 @@ class StarSettings {
     public var starsCount(default, null) : Int;
 
     public function new() {
-        starsCount = 100;
+        starsCount = 1000;
         distribution = [
             StarType.SUBDWARF => 0.4,
             StarType.DWARF => 1,
             StarType.SUBGIANT => 0.2,
-            StarType.GIANT => 0.05,
-            StarType.SUPERGIANT => 0.01
+            StarType.GIANT => 0.005,
+            StarType.SUPERGIANT => 0.00
         ];
     }
 }
