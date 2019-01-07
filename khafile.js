@@ -5,5 +5,6 @@ project.addSources('Sources');
 project.addLibrary('Pongo');
 project.addLibrary('hxrandom');
 // project.addDefine('draw_transform');
+project.addDefine('fps');
 
 resolve(project);

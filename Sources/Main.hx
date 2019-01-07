@@ -16,7 +16,8 @@ import system.ViewMoveSystem;
 import pongo.display.TextSprite;
 import pongo.asset.AssetPack;
 import pongo.asset.Manifest;
-
+import ui.fps.FpsSystem;
+import ui.fps.component.Fps;
 
 using pongo.ecs.transform.Transform.TransformUtil;
 
@@ -29,7 +30,7 @@ class Main {
 
 
 	public static function main() {
-           PlatformPongo.create("Empty", WIDTH, HEIGHT, function(pongo) {
+        PlatformPongo.create("Empty", WIDTH, HEIGHT, function(pongo) {
             pongo.loadManifest(Manifest.fromAssets("galaxy"), onStart.bind(pongo));
         });        
 	}
@@ -41,18 +42,24 @@ class Main {
 
         pongo
             .addSystem(new TransformSystem())
+            #if fps
+            .addSystem(new FpsSystem())
+            #end
             .addSystem(new PositionSystem());
 		
         initializeStars(pongo);
-		
+		initializeUi(pongo);
     }
 
     private static function initializeUi(pongo : Pongo) {
         var uiLayer = pongo.root.createChild();
-
-        var trans = new Transform(new TextSprite(font, 43, Color.Blue, "Hello world!")).setXY(WIDTH / 2, HEIGHT / 2);
-        trans.centerAnchor();
-        uiLayer.addComponent(trans);
+    
+        #if fps
+        var fpsCounter = uiLayer.createChild();
+        fpsCounter
+            .addComponent(new Transform(new TextSprite(font, 43, Color.White, "")).setXY(0, 0))
+            .addComponent(new Fps());
+        #end
     }
 
     private static function initializeStars(pongo : Pongo) {

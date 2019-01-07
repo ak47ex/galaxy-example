@@ -45,7 +45,6 @@ class StarsInitSystem extends System {
             
                 distance += Random.float(minDistance, maxDistance);
                 curvature += curvatureStep;
-                star.notifyChange();
                 star = star.next;
                 starIndex++;
             }
