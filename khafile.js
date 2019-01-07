@@ -4,4 +4,6 @@ project.addShaders('Shaders/**');
 project.addSources('Sources');
 project.addLibrary('Pongo');
 project.addLibrary('hxrandom');
+// project.addDefine('draw_transform');
+
 resolve(project);

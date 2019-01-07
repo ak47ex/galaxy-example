@@ -1,16 +1,20 @@
 package system;
 
+import pongo.ecs.Component;
 import kha.graphics2.Graphics;
 import kha.input.KeyCode;
 import pongo.input.KeyCode;
 import pongo.input.Keyboard;
 import pongo.ecs.System;
 import pongo.ecs.transform.Transform;
+import pongo.ecs.Entity;
 
 class ViewMoveSystem extends System {
 
     private var gameWidth : Float;
     private var gameHeight : Float;
+
+    private var camera : Transform;
 
     private var cameraSpeed = 1000;
     private var zoomSpeed = 0.1;
@@ -30,9 +34,10 @@ class ViewMoveSystem extends System {
 
     private var isTouch : Bool;
 
-    public function new(gameWidth : Float, gameHeight : Float) { 
+    public function new(gameWidth : Float, gameHeight : Float, camera : Entity) { 
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
+        this.camera = camera.getComponent(Transform);
     }
 
     override public function onAdded() {
@@ -41,7 +46,6 @@ class ViewMoveSystem extends System {
         this.pongo.mouse.down.connect(touchDown);
         this.pongo.mouse.move.connect(touchMove);
 
-        var camera = this.pongo.root.getComponent(Transform);
         defaultX = camera.x;
         defaultY = camera.y;
         defaultScaleX = camera.scaleX;
@@ -49,8 +53,6 @@ class ViewMoveSystem extends System {
     }
 
     override public function update(delta : Float) {
-        var camera = this.pongo.root.getComponent(Transform);
-
         if (down) {
             camera.y -= delta * cameraSpeed;
         }
@@ -154,14 +156,11 @@ class ViewMoveSystem extends System {
         var inWindow = x >= window.x && x <= window.x + window.width && y >= window.y && y <= window.y + window.height;
         if (!inWindow) return;
 
-        
-        var camera = this.pongo.root.getComponent(Transform);
         camera.x += gameWidth / window.width * deltaX;
         camera.y += gameHeight / window.height * deltaY;
     }
 
     private function resetView() {
-        var camera = this.pongo.root.getComponent(Transform);
         camera.x = defaultX;
         camera.y = defaultY;
         camera.scaleX = defaultScaleX;

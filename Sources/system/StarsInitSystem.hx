@@ -20,13 +20,12 @@ class StarsInitSystem extends System {
     override public function onAdded() : Void
     {
         var stars = this.pongo.manager.registerGroup([Star]);
-        var starsInArm = Std.int(1000 / galaxySettings.armsAmount);
+        var starsInArm = Std.int(stars.length / galaxySettings.armsAmount);
 
         var star : Entity = starsRoot.firstChild;
-        trace(starsInArm);
         var step = (2 * Math.PI) / galaxySettings.armsAmount;
+        
         for (i in 0...galaxySettings.armsAmount) {
-            trace('Arm #${i + 1}');
             var distance : Float = 150;
             var minDistance = 10;
             var maxDistance = 250;

@@ -1,75 +1,84 @@
 package;
 
+import pongo.display.Font;
 import pongo.display.ClearSprite;
-import pongo.util.Signal2;
 import kha.Color;
 import kha.math.Random;
-import component.Star;
 import component.PolarPosition;
 import pongo.display.CircleSprite;
 import pongo.Pongo;
+import pongo.platform.Pongo as PlatformPongo;
 import pongo.ecs.transform.Transform;
 import pongo.ecs.transform.TransformSystem;
-import pongo.ecs.Component;
-import pongo.ecs.System;
-import pongo.ecs.Entity;
-import pongo.ecs.group.SourceGroup;
-import pongo.display.FillSprite;
 import system.PositionSystem;
 import system.StarsInitSystem;
 import system.ViewMoveSystem;
+import pongo.display.TextSprite;
+import pongo.asset.AssetPack;
+import pongo.asset.Manifest;
+
+
+using pongo.ecs.transform.Transform.TransformUtil;
 
 class Main {
 
 	public static inline var WIDTH = 600;
 	public static inline var HEIGHT = 400;
 
+	private static var font:Font;
+
+
 	public static function main() {
-        
-        pongo.platform.Pongo.create("Empty", WIDTH, HEIGHT, onStart);
+           PlatformPongo.create("Empty", WIDTH, HEIGHT, function(pongo) {
+            pongo.loadManifest(Manifest.fromAssets("galaxy"), onStart.bind(pongo));
+        });        
 	}
 
-	private static function onStart(pongo :Pongo) : Void
+	private static function onStart(pongo :Pongo, pack :AssetPack) : Void
     {
         Random.init(Std.int(Date.now().getTime()));
+        font = pack.getFont("carbon");
 
-        pongo.window.onResize.connect(onResize);
+        pongo
+            .addSystem(new TransformSystem())
+            .addSystem(new PositionSystem());
+		
+        initializeStars(pongo);
+		
+    }
 
+    private static function initializeUi(pongo : Pongo) {
+        var uiLayer = pongo.root.createChild();
 
+        var trans = new Transform(new TextSprite(font, 43, Color.Blue, "Hello world!")).setXY(WIDTH / 2, HEIGHT / 2);
+        trans.centerAnchor();
+        uiLayer.addComponent(trans);
+    }
+
+    private static function initializeStars(pongo : Pongo) {
         var galaxySettings = new GalaxySettings();
 
         var starSettings = new StarSettings();
         var starsRoot = pongo.root.createChild();
-        var starFactory = new StarFactory(starsRoot, starSettings);
+        starsRoot.addComponent(new Transform(new ClearSprite(0,0)));
 
-        pongo.root.addComponent(new Transform(new ClearSprite(0,0)));
+        var starFactory = new StarFactory(starsRoot, starSettings, pongo.manager);
         
-        pongo
-            .addSystem(new TransformSystem())
-            .addSystem(new PositionSystem())
-            .addSystem(new ViewMoveSystem(WIDTH, HEIGHT));
-        
-
         for (i in 0...starSettings.starsCount) {
             starFactory.createRandomStar();
-            trace("star created");
         }
+        
+    
+        pongo.addSystem(new ViewMoveSystem(WIDTH, HEIGHT, starsRoot));
+    
         var starsInitSystem = new StarsInitSystem(starsRoot, galaxySettings);
         pongo.addSystem(starsInitSystem);
         pongo.removeSystem(starsInitSystem);
-            
-		var entity = pongo.root.createChild();
-    
-		entity
+        
+        var bulge = starsRoot.createChild();
+		bulge
 			.addComponent(new PolarPosition(0, 0))
 			.addComponent(new Transform(new CircleSprite(0x0fff0000, 50)));
-
-		
-    }
-
-    private static function onResize(a: Int, b: Int) { 
-            trace("Huy");
-            trace("$a $b");
     }
 }
 

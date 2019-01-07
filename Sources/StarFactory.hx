@@ -1,4 +1,5 @@
 
+import pongo.ecs.group.Manager;
 import kha.Color;
 import Random;
 import pongo.ecs.transform.Transform;
@@ -16,9 +17,10 @@ class StarFactory {
     private var settings: StarSettings;
     private var types : Array<StarType> = StarType.createAll();
 
-    public function new(starRoot: Entity, starSettings: StarSettings) {
+    public function new(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager) {
         this.starRoot = starRoot;
         this.settings = starSettings;
+        pongoManager.registerGroup([Star]);
     }
 
     public function createRandomStar() : Entity {
@@ -35,11 +37,12 @@ class StarFactory {
             case SUPERGIANT: size = Random.float(1000, 2000);
         }
 
-        entity.addComponent(new PolarPosition(0, 0));
-        entity.addComponent(new Star(type));
-        entity.addComponent(new Transform(new CircleSprite(Color.fromValue(Random.int(0, 32000000)).value, size)));
-
-
+        entity
+            .addComponent(new PolarPosition(0, 0))
+            .addComponent(new Star(type))
+            .addComponent(new Transform(new CircleSprite(Color.fromValue(Random.int(0, 32000000)).value, size)));
+    
+        
         return entity;
     }
 }
