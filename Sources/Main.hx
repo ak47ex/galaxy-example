@@ -18,6 +18,8 @@ import pongo.asset.AssetPack;
 import pongo.asset.Manifest;
 import ui.fps.FpsSystem;
 import ui.fps.component.Fps;
+import ui.ButtonFactory;
+import ui.Align;
 
 using pongo.ecs.transform.Transform.TransformUtil;
 
@@ -46,7 +48,7 @@ class Main {
             .addSystem(new FpsSystem())
             #end
             .addSystem(new PositionSystem());
-		
+        
         initializeStars(pongo);
 		initializeUi(pongo);
     }
@@ -60,6 +62,9 @@ class Main {
             .addComponent(new Transform(new TextSprite(font, 43, Color.White, "")).setXY(0, 0))
             .addComponent(new Fps());
         #end
+
+        ButtonFactory.createButton(uiLayer, "+1000", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
+        ButtonFactory.createButton(uiLayer, "+10000", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
     }
 
     private static function initializeStars(pongo : Pongo) {
