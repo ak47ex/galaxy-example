@@ -12,6 +12,8 @@ using utility.UiUtil;
 
 class ButtonFactory {
 
+    var buttonLayer : Entity;
+
     public static function createButton(uiLayer : Entity, text : String, font : Font, fontSize : Int, fontColor : Color, x : Float, y : Float, align : Align) : Entity {
         var button = uiLayer.createChild();
         

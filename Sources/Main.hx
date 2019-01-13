@@ -20,6 +20,10 @@ import ui.fps.FpsSystem;
 import ui.fps.component.Fps;
 import ui.ButtonFactory;
 import ui.Align;
+import pongo.ecs.Entity;
+import ui.event.UiEventSystem;
+import ui.event.component.ChangeStarsAmountEvent;
+import ui.ClickListener;
 
 using pongo.ecs.transform.Transform.TransformUtil;
 
@@ -47,7 +51,8 @@ class Main {
             #if fps
             .addSystem(new FpsSystem())
             #end
-            .addSystem(new PositionSystem());
+            .addSystem(new PositionSystem())
+            .addSystem(new UiEventSystem());
         
         initializeStars(pongo);
 		initializeUi(pongo);
@@ -63,8 +68,17 @@ class Main {
             .addComponent(new Fps());
         #end
 
-        ButtonFactory.createButton(uiLayer, "+1000", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
-        ButtonFactory.createButton(uiLayer, "+10000", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
+        var button1k : Entity = ButtonFactory.createButton(uiLayer, "+1000", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
+        var clickListener : ClickListener = new ClickListener(pongo, button1k.getComponent(Transform));
+        clickListener.clicked.connect(function (x : Int, y : Int) {
+            uiLayer.addComponent(new ChangeStarsAmountEvent(1000));
+        });
+
+        var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10000", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
+        var clickListener : ClickListener = new ClickListener(pongo, button10k.getComponent(Transform));
+        clickListener.clicked.connect(function (x : Int, y : Int) {
+            uiLayer.addComponent(new ChangeStarsAmountEvent(10000));
+        });
     }
 
     private static function initializeStars(pongo : Pongo) {
@@ -74,10 +88,10 @@ class Main {
         var starsRoot = pongo.root.createChild();
         starsRoot.addComponent(new Transform(new ClearSprite(0,0)));
 
-        var starFactory = new StarFactory(starsRoot, starSettings, pongo.manager);
+        StarFactory.init(starsRoot, starSettings, pongo.manager);
         
         for (i in 0...starSettings.starsCount) {
-            starFactory.createRandomStar();
+            StarFactory.instance.createRandomStar();
         }
         
     
@@ -85,7 +99,6 @@ class Main {
     
         var starsInitSystem = new StarsInitSystem(starsRoot, galaxySettings);
         pongo.addSystem(starsInitSystem);
-        pongo.removeSystem(starsInitSystem);
         
         var bulge = starsRoot.createChild();
 		bulge

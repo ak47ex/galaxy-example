@@ -6,7 +6,7 @@ class StarSettings {
     public var starsCount(default, null) : Int;
 
     public function new() {
-        starsCount = 1000;
+        starsCount = 100;
         distribution = [
             StarType.SUBDWARF => 0.4,
             StarType.DWARF => 1,

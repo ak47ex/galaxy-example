@@ -12,12 +12,19 @@ import utility.MapHelper;
 
 class StarFactory { 
 
+    public static var instance(default, null) : StarFactory;
 
     private var starRoot: Entity;
     private var settings: StarSettings;
     private var types : Array<StarType> = StarType.createAll();
 
-    public function new(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager) {
+    public static function init(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager) {
+        if (instance != null) return;
+
+        instance = new StarFactory(starRoot, starSettings, pongoManager);
+    }
+
+    private function new(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager) {
         this.starRoot = starRoot;
         this.settings = starSettings;
         pongoManager.registerGroup([Star]);
@@ -45,4 +52,5 @@ class StarFactory {
         
         return entity;
     }
+    
 }

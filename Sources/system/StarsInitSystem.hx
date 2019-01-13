@@ -1,5 +1,6 @@
 package system;
 
+import pongo.ecs.group.SourceGroup;
 import pongo.ecs.System;
 import component.PolarPosition;
 import pongo.ecs.transform.Transform;
@@ -12,6 +13,9 @@ class StarsInitSystem extends System {
     private var starsRoot : Entity;
     private var galaxySettings : GalaxySettings;
 
+    private var stars : SourceGroup;
+    private var starsLength : Int;
+
     public function new(starsRoot : Entity, galaxySettings : GalaxySettings) {
         this.starsRoot = starsRoot;
         this.galaxySettings = galaxySettings;
@@ -19,7 +23,23 @@ class StarsInitSystem extends System {
 
     override public function onAdded() : Void
     {
-        var stars = this.pongo.manager.registerGroup([Star]);
+        stars = this.pongo.manager.registerGroup([Star]);
+        updateStarsPosition();
+        starsLength = stars.length;
+    }
+
+    override public function update(dt :Float) : Void
+    {
+        if (stars.length != starsLength) {
+            updateStarsPosition();
+            starsLength = stars.length;
+            trace('Total stars: $starsLength');
+        }
+    }
+
+
+    //TODO: need actually update positions for new stars, not reinitiate positions.
+    private function updateStarsPosition() {
         var starsInArm = Std.int(stars.length / galaxySettings.armsAmount);
 
         var star : Entity = starsRoot.firstChild;

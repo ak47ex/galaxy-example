@@ -26,6 +26,8 @@ class PositionSystem extends System {
     private function updatePosition(entity : Entity) {
             var pos : PolarPosition = entity.getComponent(PolarPosition);
             var transform :Transform = entity.getComponent(Transform);
+            if (!transform.visible) return;
+            
             var centerX = this.pongo.window.width / 2;
             var centerY = this.pongo.window.height / 2;
             
