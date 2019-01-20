@@ -35,6 +35,8 @@ class StarsInitSystem extends System {
 
     private var quadTree : Quadtree<Dynamic>;
 
+    private var nonFitShift : Int;
+
     public function new(starsRoot : Entity, galaxySettings : GalaxySettings) {
         this.starsRoot = starsRoot;
         this.galaxySettings = galaxySettings;
@@ -72,9 +74,11 @@ class StarsInitSystem extends System {
             starsLength = stars.length;
         }
 
+        nonFitShift = 0;
         while (poolOfNotFit.length > 0) {
             trace(poolOfNotFit.length);
             allocateStarInArm(poolOfNotFit.pop());
+            nonFitShift++;
         }
     }
 
@@ -129,13 +133,12 @@ class StarsInitSystem extends System {
         var startAngle = lastIndex % arms.length * step;
         
         var pos = e.getComponent(PolarPosition);
-        pos.angle = arm.length * curvatureStep + Random.float(0, 4 * curvatureStep) + startAngle;
-        pos.radius = arm.length * galaxySettings.starDistance + Random.float(0, galaxySettings.starDistance / 2) + pos.angle;
-    
+        applyPosition(pos, arm.length + nonFitShift, startAngle);
         if (addOrPoolStar(e)) {
             arm.push(e);
             lastIndex++;
             if (lastIndex > arms.length) lastIndex = 1;
+            if (nonFitShift > 0) nonFitShift -= 1;
         }
 
     }
@@ -164,16 +167,19 @@ class StarsInitSystem extends System {
         var step = (2 * Math.PI) / arms.length;
         for (i in 0...arms.length) {
             var arm = arms[i];
-            var curvatureStep = galaxySettings.spin;
             var startAngle = i * step;
             for (j in 0...arm.length) {
                 var star = arm[j];
                 var pos : PolarPosition = star.getComponent(PolarPosition);
-                pos.angle = (j + 1) * curvatureStep + startAngle;
-                pos.radius = (j + 1) * galaxySettings.starDistance + pos.angle;
+                applyPosition(pos, j + 1, startAngle);
                 addOrPoolStar(star);
             }
-        }
-      
+        } 
+    }
+
+    private function applyPosition(pos : PolarPosition, index : Int, startAngle : Float) {
+        var curvatureStep = galaxySettings.spin;
+        pos.angle = index * curvatureStep + startAngle;
+        pos.radius = index * galaxySettings.starDistance + pos.angle;
     }
 }
