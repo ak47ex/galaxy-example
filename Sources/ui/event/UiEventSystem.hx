@@ -33,7 +33,7 @@ class UiEventSystem extends System {
             var shouldAdd = total > 0;
             for (i in 0...Std.int(Math.abs(total))) {
                 if (shouldAdd) {
-                    StarFactory.instance.createRandomStar();
+                    var entity = StarFactory.instance.createRandomStar();
                 } else {
                     var stars : SourceGroup = this.pongo.manager.registerGroup([Star]);
                     stars.first().parent.removeEntity(stars.first());

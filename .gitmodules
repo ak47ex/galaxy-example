@@ -4,3 +4,6 @@
 [submodule "Libraries/hxrandom"]
 	path = Libraries/hxrandom
 	url = https://github.com/jasononeil/hxrandom.git
+[submodule "Libraries/Quadtree"]
+	path = Libraries/Quadtree
+	url = https://github.com/ak47ex/Quadtree.git

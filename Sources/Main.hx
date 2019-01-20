@@ -47,14 +47,13 @@ class Main {
         font = pack.getFont("carbon");
 
         pongo
-            .addSystem(new TransformSystem())
             #if fps
             .addSystem(new FpsSystem())
             #end
             .addSystem(new PositionSystem())
             .addSystem(new UiEventSystem());
         
-        initializeStars(pongo);
+        initializeStars(pongo, pack);
 		initializeUi(pongo);
     }
 
@@ -72,28 +71,29 @@ class Main {
         var clickListener : ClickListener = new ClickListener(pongo, button1k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(1000));
+            trace("+1k");
         });
 
         var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10000", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, button10k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(10000));
+            trace("+10k");
         });
     }
 
-    private static function initializeStars(pongo : Pongo) {
+    private static function initializeStars(pongo : Pongo, pack : AssetPack) {
         var galaxySettings = new GalaxySettings();
 
         var starSettings = new StarSettings();
         var starsRoot = pongo.root.createChild();
         starsRoot.addComponent(new Transform(new ClearSprite(0,0)));
 
-        StarFactory.init(starsRoot, starSettings, pongo.manager);
+        StarFactory.init(starsRoot, starSettings, pongo.manager, pack);
         
         for (i in 0...starSettings.starsCount) {
             StarFactory.instance.createRandomStar();
         }
-        
     
         pongo.addSystem(new ViewMoveSystem(WIDTH, HEIGHT, starsRoot));
     
@@ -103,63 +103,6 @@ class Main {
         var bulge = starsRoot.createChild();
 		bulge
 			.addComponent(new PolarPosition(0, 0))
-			.addComponent(new Transform(new CircleSprite(0x0fff0000, 50)));
+			.addComponent(new Transform(new CircleSprite(0x0fff0000, 100)));
     }
 }
-
-
-// class Hero implements Component
-// {
-//     var speed :Float;
-// }
-
-// class HeroSystem extends System
-// {
-//     public var heroes :SourceGroup;
-
-//     public function new() : Void
-//     {
-//     }
-
-//     override public function onAdded() : Void
-//     {
-//         this.heroes = this.pongo.manager.registerGroup([Position, Hero, Transform]);   
-//     }
-
-//     override public function update(dt :Float) : Void
-//     {
-//         heroes.iterate(function(entity) {
-//             var hero :Hero = entity.getComponent(Hero);
-//             var pos :Position = entity.getComponent(Position);
-//             var transform :Transform = entity.getComponent(Transform);
-//             var sprite :FillSprite = cast transform.sprite;
-
-//             pos.x = (hero.speed*dt) * Math.cos(pos.angle) + pos.x;
-//             pos.y = (hero.speed*dt) * Math.sin(pos.angle) + pos.y;
-
-//             if(pos.y <= 0) {
-//                 pos.angle = (-pos.angle);
-//                 pos.y = 1;
-//                 sprite.color = 0xff00ff00;
-//             }
-//             else if(pos.y >= pongo.window.height) {
-//                 pos.angle = (-pos.angle);
-//                 pos.y = pongo.window.height - 1;
-//                 sprite.color = 0xff0000ff;
-//             }
-//             if(pos.x >= pongo.window.width) {
-//                 pos.angle = (pos.angle+180) % 360;
-//                 pos.x = pongo.window.width -1;
-//                 sprite.color = 0xffffff00;
-//             }
-//             else if(pos.x <= 0) {
-//                 pos.angle = (pos.angle+180) % 360;
-//                 pos.x = 1;
-//                 sprite.color = 0xffff00ff;
-//             }
-
-//             transform.y = pos.y;
-//             transform.x = pos.x;
-//         });
-//     }
-// }
