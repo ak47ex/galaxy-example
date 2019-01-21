@@ -23,6 +23,7 @@ import ui.Align;
 import pongo.ecs.Entity;
 import ui.event.UiEventSystem;
 import ui.event.component.ChangeStarsAmountEvent;
+import ui.event.component.ChangeArmAmountEvent;
 import ui.ClickListener;
 
 using pongo.ecs.transform.Transform.TransformUtil;
@@ -67,14 +68,22 @@ class Main {
             .addComponent(new Fps());
         #end
 
-        var button1k : Entity = ButtonFactory.createButton(uiLayer, "+1000", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
+
+        var buttonArm : Entity = ButtonFactory.createButton(uiLayer, "+1 arm", font, 40, Color.Magenta, WIDTH, HEIGHT - 120, Align.bottomRight);
+        var clickListener : ClickListener = new ClickListener(pongo, buttonArm.getComponent(Transform));
+        clickListener.clicked.connect(function (x : Int, y : Int) {
+            uiLayer.addComponent(new ChangeArmAmountEvent(1));
+            trace("+1 arm");
+        });
+
+        var button1k : Entity = ButtonFactory.createButton(uiLayer, "+1k stars", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, button1k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(1000));
             trace("+1k");
         });
 
-        var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10000", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
+        var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10k stars", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, button10k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(10000));
@@ -90,7 +99,11 @@ class Main {
         starsRoot.addComponent(new Transform(new ClearSprite(0,0)));
 
         StarFactory.init(starsRoot, starSettings, pongo.manager, pack);
-        
+        ArmFactory.init(starsRoot, pongo.manager);
+
+        for (i in 0...galaxySettings.armsAmount) {
+            ArmFactory.instance.createArm();
+        }
         for (i in 0...starSettings.starsCount) {
             StarFactory.instance.createRandomStar();
         }

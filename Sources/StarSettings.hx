@@ -12,10 +12,10 @@ class StarSettings {
         starsCount = 1000;
 
         distribution = [
-            StarType.SUBDWARF => 0.4,
-            StarType.DWARF => 0.001,
+            StarType.SUBDWARF => 0.002,
+            StarType.DWARF => 0.04,
             StarType.SUBGIANT => 1,
-            StarType.GIANT => 1,
+            StarType.GIANT => 0.0001,
             StarType.SUPERGIANT => 0.00001
         ];
 

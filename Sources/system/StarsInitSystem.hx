@@ -20,12 +20,10 @@ class StarsInitSystem extends System {
     private var arms : Array<Array<Entity>>;
     private var starsRoot : Entity;
     private var galaxySettings : GalaxySettings;
-    private var armsLength : Int;
 
     private var armEntities : SourceGroup;
 
     private var stars : SourceGroup;
-    private var starsLength : Int;
     private var lastIndex = 0;
 
     private var galaxyWidth = 100000000;
@@ -40,16 +38,15 @@ class StarsInitSystem extends System {
     public function new(starsRoot : Entity, galaxySettings : GalaxySettings) {
         this.starsRoot = starsRoot;
         this.galaxySettings = galaxySettings;
-        armsLength = galaxySettings.armsAmount;
     } 
 
     override public function onAdded() : Void
     {
         stars = this.pongo.manager.registerGroup([Star]);
         armEntities = this.pongo.manager.registerGroup([Arm]);
+        // dispatchAllStars();
         initializeArms();
         updateStarsPosition();
-        starsLength = stars.length;
         
         armEntities.onAdded.connect(function (e) {
             increaseArms();
@@ -63,26 +60,16 @@ class StarsInitSystem extends System {
 
     override public function update(dt :Float) : Void
     {
-        if (arms.length != armsLength) {
-            if (armsLength > arms.length) {
-                increaseArms();   
-            } else {
-                decreaseArms();
-            }
-        }
-        if (stars.length != starsLength) {
-            starsLength = stars.length;
-        }
-
         nonFitShift = 0;
         while (poolOfNotFit.length > 0) {
-            trace(poolOfNotFit.length);
             allocateStarInArm(poolOfNotFit.pop());
             nonFitShift++;
         }
     }
 
     private function initializeArms() {
+
+        var armsLength = armEntities.length;
         var starsInArm = Std.int(stars.length / armsLength);
         if (stars.length % armsLength > 0) starsInArm += stars.length % armsLength;
         arms = new Array<Array<Entity>>();
@@ -100,24 +87,40 @@ class StarsInitSystem extends System {
     }
 
     private function increaseArms() {
-        var increment = armsLength - arms.length;
-        var wasStarsPerArm : Float = stars.length / arms.length;
+        var increment = armEntities.length - arms.length;
         for (i in 0...increment) {
             arms.push(new Array<Entity>());
         }
-
-        var becameStarsPerArm : Float = stars.length / arms.length;
-        var diff : Int = Std.int(wasStarsPerArm - becameStarsPerArm);
-
-        var reallocateStars : Array<Entity> = new Array<Entity>();
-        for (i in 0...(arms.length - increment)) {
-            for (j in 0...diff) {
-                var star = arms[i].pop();
-                if (star != null) reallocateStars.push(star);
+        rearrangeStars();
+        updateStarsPosition();
+    }
+    
+    private function rearrangeStars() {
+        var starsInArm = Std.int(stars.length / arms.length);
+        var undistributed : Array<Entity> = [];
+        for (i in 0...arms.length) {
+            if (arms[i].length > starsInArm) {
+                var left = arms[i].length - starsInArm;
+                while (left > 0) {
+                    undistributed.push(arms[i].pop());
+                    left--;
+                }
             }
         }
 
-        updateStarsPosition();
+        for (i in 0...arms.length) {
+            var diff = starsInArm - arms[i].length;
+            while (diff > 0 && undistributed.length > 0) {
+                arms[i].push(undistributed.pop());
+                diff--;
+            }
+        }
+
+        var i = 0;
+        while(undistributed.length > 0) {
+            arms[i % arms.length].push(undistributed.pop());
+            i++;
+        }
     }
 
     private function decreaseArms() {
@@ -125,12 +128,19 @@ class StarsInitSystem extends System {
     }
 
     private function allocateStarInArm(e : Entity) {
-        var arm : Array<Entity> = arms[lastIndex % arms.length];
-    
-        var curvatureStep = galaxySettings.spin;
+        var minVal = arms[0].length;
+        var minIndex = 0;
+        for (i in 0...arms.length) {
+            if (arms[i].length < minVal) {
+                minVal = arms[i].length;
+                minIndex = i;
+            }
+        }
+
+        var arm : Array<Entity> = arms[minIndex];
         var step = (2 * Math.PI) / arms.length + 1;
 
-        var startAngle = lastIndex % arms.length * step;
+        var startAngle = minIndex * step;
         
         var pos = e.getComponent(PolarPosition);
         applyPosition(pos, arm.length + nonFitShift, startAngle);
@@ -166,19 +176,43 @@ class StarsInitSystem extends System {
 
         var step = (2 * Math.PI) / arms.length;
         for (i in 0...arms.length) {
+            var newArm = [];
             var arm = arms[i];
             var startAngle = i * step;
+            trace('Arm ${i+1} length ${arm.length}');
             for (j in 0...arm.length) {
                 var star = arm[j];
                 var pos : PolarPosition = star.getComponent(PolarPosition);
                 applyPosition(pos, j + 1, startAngle);
-                addOrPoolStar(star);
+                if (addOrPoolStar(star)) {
+                    newArm.push(star);
+                }
             }
-        } 
+            arms[i] = newArm;
+        }
+    }
+
+    private function dispatchAllStars() {
+        recreateQuadTree();
+
+        arms = new Array<Array<Entity>>();
+        for (i in 0...armEntities.length) {
+            arms.push(new Array<Entity>());
+        }
+        trace(arms);
+        var star : Entity = stars.first();
+        
+        while(star != null) {
+            allocateStarInArm(star);
+            star = star.next;
+        }
+
     }
 
     private function applyPosition(pos : PolarPosition, index : Int, startAngle : Float) {
         var curvatureStep = galaxySettings.spin;
+        // pos.angle = index * curvatureStep;
+        // pos.radius = Math.exp(pos.angle + startAngle);
         pos.angle = index * curvatureStep + startAngle;
         pos.radius = index * galaxySettings.starDistance + pos.angle;
     }
