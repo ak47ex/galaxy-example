@@ -138,9 +138,9 @@ class StarsInitSystem extends System {
         }
 
         var arm : Array<Entity> = arms[minIndex];
-        var step = (2 * Math.PI) / arms.length + 1;
+        var step = (2 * Math.PI) / arms.length;
 
-        var startAngle = minIndex * step;
+        var startAngle = (minIndex + 1) * step;
         
         var pos = e.getComponent(PolarPosition);
         applyPosition(pos, arm.length + nonFitShift, startAngle);

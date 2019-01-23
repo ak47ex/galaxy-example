@@ -12,6 +12,7 @@ import pongo.ecs.Entity;
 import utility.MapHelper;
 import pongo.display.ImageSprite;
 import pongo.asset.AssetPack;
+import graphics.ShaderSprite;
 
 import utility.CommonUtil.getValueFromInterval in randVal;
 
@@ -26,18 +27,20 @@ class StarFactory {
     private var starRoot: Entity;
     private var settings: StarSettings;
     private var types : Array<StarType> = StarType.createAll();
+    private var pongo : Pongo;
 
-    public static function init(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager, pack : AssetPack) {
+    public static function init(starRoot: Entity, starSettings: StarSettings, pongo : Pongo, pack : AssetPack) {
         if (instance != null) return;
-
-        instance = new StarFactory(starRoot, starSettings, pongoManager, pack);
+    
+        instance = new StarFactory(starRoot, starSettings, pongo, pack);
     }
 
-    private function new(starRoot: Entity, starSettings: StarSettings, pongoManager : Manager, pack : AssetPack) {
+    private function new(starRoot: Entity, starSettings: StarSettings, pongo : Pongo, pack : AssetPack) {
         this.starRoot = starRoot;
         this.settings = starSettings;
         this.pack = pack;
-        pongoManager.registerGroup([Star]);
+        this.pongo = pongo;
+        pongo.manager.registerGroup([Star]);
     }
 
     public function createRandomStar() : Entity {
@@ -46,14 +49,10 @@ class StarFactory {
         var type : StarType = MapHelper.getRandomKeyForProbability(settings.distribution);
 
         var size : Float = randVal(settings.getSizeInterval(type));
-    
-        var sprites = ["star_1", "star_2", "star_3"];
-        var spriteName = Random.fromArray(sprites);
+        
         entity
             .addComponent(new PolarPosition(0, 0))
             .addComponent(new Star(type, size))
-            //                                                                                          dirty hack to rescale image
-            // .addComponent(new Transform(new MutableImageSprite(pack.getImage(spriteName), size, size)).setScale(size / STAR_IMAGE_SIZE));
             .addComponent(new Transform(new FillSprite(Color.fromValue(Random.int(0, 32000000)).value, 2 * size, 2 * size)));
     
         

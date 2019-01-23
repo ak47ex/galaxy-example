@@ -40,7 +40,7 @@ class FpsSystem extends System {
             entities.iterate(function (entity : Entity) {
                 var comp = entity.getComponent(Transform);
                 entity.getComponent(Fps).count = totalFps;
-                cast(comp.sprite, TextSprite).text = '$totalFps';
+                cast(comp.sprite, TextSprite).text = 'FPS: $totalFps';
             });
             fps = 0;
             previousRealTime = realTime;

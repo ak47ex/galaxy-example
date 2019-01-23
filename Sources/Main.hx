@@ -25,8 +25,11 @@ import ui.event.UiEventSystem;
 import ui.event.component.ChangeStarsAmountEvent;
 import ui.event.component.ChangeArmAmountEvent;
 import ui.ClickListener;
+import ui.info.component.StarCounter;
+import ui.info.component.ArmCounter;
+import ui.info.InfoSystem;
 
-using pongo.ecs.transform.Transform.TransformUtil;
+using utility.UiUtil;
 
 class Main {
 
@@ -52,9 +55,11 @@ class Main {
             .addSystem(new FpsSystem())
             #end
             .addSystem(new PositionSystem())
-            .addSystem(new UiEventSystem());
-        
+            .addSystem(new UiEventSystem())
+            .addSystem(new InfoSystem());
+
         initializeStars(pongo, pack);
+        
 		initializeUi(pongo);
     }
 
@@ -64,26 +69,35 @@ class Main {
         #if fps
         var fpsCounter = uiLayer.createChild();
         fpsCounter
-            .addComponent(new Transform(new TextSprite(font, 43, Color.White, "")).setXY(0, 0))
+            .addComponent(new Transform(new TextSprite(font, 25, Color.White, "")).setXY(0, 0))
             .addComponent(new Fps());
         #end
 
+        var starsCounter = uiLayer.createChild();
+        starsCounter
+            .addComponent(new Transform(new TextSprite(font, 25, Color.White, "0")).setXY(0, HEIGHT, Align.bottomLeft))
+            .addComponent(new StarCounter());
 
-        var buttonArm : Entity = ButtonFactory.createButton(uiLayer, "+1 arm", font, 40, Color.Magenta, WIDTH, HEIGHT - 120, Align.bottomRight);
+        var armsCounter = uiLayer.createChild();
+        armsCounter
+            .addComponent(new Transform(new TextSprite(font, 25, Color.White, "0")).setXY(0, HEIGHT - 25, Align.bottomLeft))
+            .addComponent(new ArmCounter());
+
+
+        var buttonArm : Entity = ButtonFactory.createButton(uiLayer, "+1 arm", font, 28, Color.Magenta, WIDTH, HEIGHT - 80, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, buttonArm.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeArmAmountEvent(1));
-            trace("+1 arm");
         });
 
-        var button1k : Entity = ButtonFactory.createButton(uiLayer, "+1k stars", font, 40, Color.Magenta, WIDTH, HEIGHT - 60, Align.bottomRight);
+        var button1k : Entity = ButtonFactory.createButton(uiLayer, "+1k stars", font, 28, Color.Magenta, WIDTH, HEIGHT - 40, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, button1k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(1000));
             trace("+1k");
         });
 
-        var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10k stars", font, 40, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
+        var button10k: Entity = ButtonFactory.createButton(uiLayer, "+10k stars", font, 28, Color.Magenta, WIDTH, HEIGHT, Align.bottomRight);
         var clickListener : ClickListener = new ClickListener(pongo, button10k.getComponent(Transform));
         clickListener.clicked.connect(function (x : Int, y : Int) {
             uiLayer.addComponent(new ChangeStarsAmountEvent(10000));
@@ -98,7 +112,7 @@ class Main {
         var starsRoot = pongo.root.createChild();
         starsRoot.addComponent(new Transform(new ClearSprite(0,0)));
 
-        StarFactory.init(starsRoot, starSettings, pongo.manager, pack);
+        StarFactory.init(starsRoot, starSettings, pongo, pack);
         ArmFactory.init(starsRoot, pongo.manager);
 
         for (i in 0...galaxySettings.armsAmount) {
