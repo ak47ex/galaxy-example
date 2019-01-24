@@ -1,6 +1,6 @@
 [submodule "Libraries/Pongo"]
 	path = Libraries/Pongo
-	url = https://github.com/PongoEngine/Pongo.git
+	url = https://github.com/ak47ex/Pongo.git
 [submodule "Libraries/hxrandom"]
 	path = Libraries/hxrandom
 	url = https://github.com/jasononeil/hxrandom.git

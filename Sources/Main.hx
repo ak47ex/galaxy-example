@@ -28,6 +28,7 @@ import ui.ClickListener;
 import ui.info.component.StarCounter;
 import ui.info.component.ArmCounter;
 import ui.info.InfoSystem;
+import graphics.StarSprite;
 
 using utility.UiUtil;
 
@@ -130,6 +131,6 @@ class Main {
         var bulge = starsRoot.createChild();
 		bulge
 			.addComponent(new PolarPosition(0, 0))
-			.addComponent(new Transform(new CircleSprite(0x0fff0000, 100)));
+			.addComponent(new Transform(new StarSprite(pongo, 4, 100, 100)));
     }
 }

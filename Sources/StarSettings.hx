@@ -8,8 +8,10 @@ class StarSettings {
 
     public var starsCount(default, null) : Int;
 
+    public var glow(default, null) : Map<StarType, Float>;
+
     public function new() {
-        starsCount = 1000;
+        starsCount = 10;
 
         distribution = [
             StarType.SUBDWARF => 0.002,
@@ -17,6 +19,14 @@ class StarSettings {
             StarType.SUBGIANT => 1,
             StarType.GIANT => 0.0001,
             StarType.SUPERGIANT => 0.00001
+        ];
+
+        glow = [
+            StarType.SUBDWARF => 1,
+            StarType.DWARF => 2,
+            StarType.SUBGIANT => 10,
+            StarType.GIANT => 100,
+            StarType.SUPERGIANT => 1000
         ];
 
         size = [

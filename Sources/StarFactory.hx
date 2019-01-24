@@ -1,18 +1,15 @@
 
 import pongo.display.FillSprite;
-import pongo.ecs.group.Manager;
 import kha.Color;
 import Random;
 import pongo.ecs.transform.Transform;
-import pongo.display.CircleSprite;
 import component.PolarPosition;
 import component.Star;
 import pongo.Pongo;
 import pongo.ecs.Entity;
 import utility.MapHelper;
-import pongo.display.ImageSprite;
 import pongo.asset.AssetPack;
-import graphics.ShaderSprite;
+import graphics.StarSprite;
 
 import utility.CommonUtil.getValueFromInterval in randVal;
 
@@ -53,7 +50,8 @@ class StarFactory {
         entity
             .addComponent(new PolarPosition(0, 0))
             .addComponent(new Star(type, size))
-            .addComponent(new Transform(new FillSprite(Color.fromValue(Random.int(0, 32000000)).value, 2 * size, 2 * size)));
+            .addComponent(new Transform(new StarSprite(pongo, settings.glow.get(type),  2 * size, 2 * size)));
+            // .addComponent(new Transform(new FillSprite(Color.fromValue(Random.int(0, 32000000)).value, 2 * size, 2 * size)));
     
         
         return entity;
