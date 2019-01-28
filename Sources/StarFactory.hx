@@ -12,7 +12,6 @@ import pongo.ecs.Entity;
 import utility.MapHelper;
 import pongo.display.ImageSprite;
 import pongo.asset.AssetPack;
-import graphics.ShaderSprite;
 
 import utility.CommonUtil.getValueFromInterval in randVal;
 
